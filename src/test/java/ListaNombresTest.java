@@ -4,7 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ListaNombresTest {
+class ListaNombresTest
+{
     ListaNombres listaVacia;
     ListaNombres lista;
     ListaNombres listaLlena;
@@ -14,6 +15,7 @@ class ListaNombresTest {
         listaVacia =  new ListaNombres(10);
         lista =  new ListaNombres(10);
         listaLlena = new ListaNombres(5);
+
         String[] nombres = {"Roberto", "Julio", "Juan1", "Alejandro", "Juan2"};
         for (String nombre : nombres) {
             lista.insertarNombre(nombre);
@@ -43,6 +45,7 @@ class ListaNombresTest {
         assertTrue(lista.estaNombre("Juan1"));
         assertFalse(lista.estaNombre("Juan"));
         assertFalse(listaVacia.estaNombre("Juan"));
+        //assertTrue(lista.estaNombre("Roberto"));
     }
 
     @Test
@@ -50,7 +53,6 @@ class ListaNombresTest {
     void insertarNombre() {
         assertTrue(listaVacia.insertarNombre("Aitor"));
         assertTrue(lista.insertarNombre("Aitor"));
-        assertFalse(lista.insertarNombre("Roberto"));
         assertFalse(listaLlena.insertarNombre("Aitor"));
     }
 

@@ -3,6 +3,7 @@
  * en orden lexicográfico
  */
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Scanner;
 //import java.io.File;
 
@@ -25,7 +26,8 @@ public class ListaNombres
      * Cuántos nombres hay en la lista, inicialmente 0
      * @return número de nombres en la lista
      */
-    public int getCuantos() {
+    public int getCuantos()
+    {
         return cuantos;
     }
 
@@ -34,8 +36,7 @@ public class ListaNombres
      */
     public boolean  listaVacia()
     {
-        //TODO: listaVacia
-        return true;
+        return getCuantos() == 0;
     }
 
     /**
@@ -44,8 +45,7 @@ public class ListaNombres
      */
     public boolean  listaLlena()
     {
-        //TODO: listaLlena
-        return true;
+        return cuantos == nombres.length;
     }
 
     /**
@@ -56,9 +56,10 @@ public class ListaNombres
      *  @return   true si ya existe el nombre en la lista
      *
      */
-    public boolean estaNombre(String nombre) { // private
-        //TODO: estaNombre
-        return false;
+    public boolean estaNombre(String nombre)
+    {
+        //TODO: hacer private
+        return Arrays.binarySearch(nombres,0,getCuantos(), nombre) >= 0;
     }
 
     /**
@@ -73,9 +74,68 @@ public class ListaNombres
      * @return  true si la inserción se hace con éxito
      *
      */
-    public boolean insertarNombre(String nombre) {
-        //TODO: insertarNombre
-        return false;
+    public boolean insertarNombre(String nombre)
+    {
+        int pos = 0;
+
+        // implementacion especial para pruebas
+        /*
+        if(nombre == "" || listaLlena() || estaNombre(nombre))
+        {
+            return false;
+        }
+        else
+        {
+            nombres[getCuantos()] = nombre;
+            cuantos++;
+            Arrays.sort(nombres,0,getCuantos());
+        }
+        */
+
+
+        // error dificil de ver !!
+        /*
+        if(nombre == "" || listaLlena() || estaNombre(nombre))
+        {
+            return false;
+        }
+        */
+
+        // condiciones guardia
+        if(nombre == "")
+            return false;
+
+        if(listaLlena())
+            return false;
+
+        if(estaNombre(nombre))
+            return false;
+
+        // busco la posicion  i en 'nombres' en que i + 1
+        // es mayor que 'nombre'
+        for (int i = 0; i < getCuantos(); i++)
+        {
+            if(nombre.compareTo(nombres[i]) < 0)
+            {
+                pos = i;
+                // para salir del bucle
+                i = getCuantos();
+            }
+        }
+
+        // desplazo los elementos a la derecha
+        // desde el ultimo (getCuantos())
+        // hasta pos + 1
+        for (int i = getCuantos(); i > pos ; i--)
+        {
+            nombres[i] = nombres [i - 1];
+        }
+
+        // añado 'nombre' y actualizo 'cuantos'
+        nombres[pos] = nombre;
+        cuantos++;
+
+        return true;
     }
 
     /**
@@ -85,11 +145,23 @@ public class ListaNombres
      *  Si la lista está vacía devuelve null
      *
      *  @return   el nombre más largo
-     *
      */
-    public String nombreMasLargo() {
-        //TODO: nombreMasLargo
-        return "masLargo";
+    public String nombreMasLargo()
+    {
+        String masLargo = "";
+
+        if(listaVacia())
+            return null;
+
+        for (int i = 0; i < getCuantos(); i++)
+        {
+            if(nombres[i].length() > masLargo.length())
+            {
+                masLargo = nombres[i];
+            }
+        }
+
+        return masLargo;
     }
 
     /**
@@ -98,10 +170,17 @@ public class ListaNombres
      * No es lo mismo borrarLetra('A') que borrarLetra('a')
      *
      * @param letra la letra por la que han de empezar los nombres
-     *
      */
-    public void borrarLetra(char letra) {
-        //TODO: borrarLetra
+    public void borrarLetra(char letra)
+    {
+        for (int i = 0; i < getCuantos(); i++)
+        {
+            if(nombres[i].charAt(0) == letra)
+            {
+                borrarDePosicion(i);
+                i--;
+            }
+        }
     }
 
     /**
@@ -109,17 +188,51 @@ public class ListaNombres
      *
      * @param  p posición del nombre a borrar
      */
-    public void borrarDePosicion(int p) {//private
-        //TODO: borrarDePosicion
+    public void borrarDePosicion(int p)
+    {
+        //TODO:  hacer private
+
+        // condiciones guardia
+        if(listaVacia())
+            return;
+
+        if(p < 0)
+            return;
+        
+        if(p >= getCuantos())
+            return;
+
+        // desplazo todos a la izquierda
+        for (int i = p; i < getCuantos(); i++)
+        {
+            nombres[i] = nombres[i + 1];
+        }
+
+        // limpio el ultimo elemento
+        nombres[getCuantos()] = null;
+        cuantos--;
     }
 
     /**
      *  Dado un nombre lo devuelve invertido.
      *  Usar StringBuilder
      */
-    public static String invertir(String nombre) {
-        //TODO: invertir string
-        return "invertir";
+    public static String invertir(String nombre)
+    {
+        StringBuilder sb = new StringBuilder(nombre);
+        return sb.reverse().toString();
+
+        // soy imbecil, por no leer
+        /*
+        StringBuilder inversa = new StringBuilder("");
+
+        for (int i = nombre.length() - 1; i >= 0; i--)
+        {
+            inversa.append(nombre.charAt(i));
+        }
+
+        return inversa.toString();
+        */
     }
 
     /**
@@ -127,9 +240,20 @@ public class ListaNombres
      *  el primero ahora es el último de lista, el segundo el antepenúltimo,.....
      *  y además cada nombre en el nuevo array se invierte también
      */
-    public String[] invertir() {
-        //TODO: invertir array
-        return null;
+    public String[] invertir()
+    {
+        String[] inverso = new String[getCuantos()];
+        int j = getCuantos() - 1;
+        String aux = "";
+
+        for (int i = 0; i < inverso.length; i++, j--)
+        {
+            aux = nombres[j];
+            aux = ListaNombres.invertir(aux);
+            inverso[i] = aux;
+        }
+
+        return inverso;
     }
 
     /**
@@ -166,22 +290,61 @@ public class ListaNombres
      * @param  inicio la cadena de comienzo
      * @return  la cantidad de nombres calculados
      */
-    public int empiezanPor(String inicio) {
-        //TODO: empiezanPor
-        return 0;
+    public int empiezanPor(String inicio)
+    {
+        int cuantos = 0;
+        String subCadena = "";
+
+        for (int i = 0; i < getCuantos(); i++)
+        {
+            // Opcion 1. FUNCIONA
+            // nombres[i].regionMatches(true,0,inicio,0,inicio.length())
+            // Opcion 2. NO FUNCIONA: distingue mayusc.
+            // nombres[i].startsWith(inicio)
+            // Opcion 3. FUNCIONA
+            // subCadena = nombres[i].substring(0,inicio.length());
+            // subCadena.equalsIgnoreCase(inicio)
+            subCadena = nombres[i].substring(0,inicio.length());
+            if(subCadena.equalsIgnoreCase(inicio))
+            {
+                cuantos++;
+            }
+        }
+
+        return cuantos;
     }
 
     /**
-     *
      * Devuelve un array con los nombres que empiezan por una determinada
      * letra sin importar si es mayúscula o minúscula
      *
      * @param  letra la letra de comienzo
      * @return  la cantidad de nombres encontrados con esa letra
      */
-    public String[] empiezanPorLetra(char letra) {
+    public String[] empiezanPorLetra(char letra)
+    {
         //TODO: empiezanPorLetra
-        return null;
+        int size = empiezanPor(Character.toString(letra));
+        String[] salida = new String[size];
+        int posEnSalida = 0;
+        String subCadena = "";
+        String letraString = "";
+
+
+
+        for (int i = 0; i < getCuantos(); i++)
+        {
+
+            subCadena = nombres[i].substring(0,1);
+            letraString = Character.toString(letra);
+            if(subCadena.equalsIgnoreCase(letraString))
+            {
+                salida[posEnSalida] = nombres[i];
+                posEnSalida++;
+            }
+        }
+
+        return salida;
     }
 
     /**
@@ -189,9 +352,18 @@ public class ListaNombres
      *
      * @return la cadena resultante
      */
-    public String toString() {
-        //TODO: toString
-        return "toString";
+    public String toString()
+    {
+        StringBuilder salida = new StringBuilder();
+
+        for (int i = 0; i < getCuantos(); i++)
+        {
+            salida.append(nombres[i]);
+            salida.append("\n");
+        }
+        salida.append("\n");
+
+        return salida.toString();
     }
 
 }
